@@ -4,41 +4,21 @@ on:
   push:
 
 jobs:
-  build-library:
+  tests:
     runs-on: ubuntu-latest
 
     steps:
       - name: Download repository
         uses: actions/checkout@v7
+
+      - name: Install GoogleTest
+        run: sudo apt-get update && sudo apt-get install -y libgtest-dev
 
       - name: Configure
         run: cmake -S . -B build
 
       - name: Build library
-        run: cmake --build build --target nstd
-
-      - name: Save build
-        uses: actions/upload-artifact@v4
-        with:
-          name: nstd-lib
-          path: build
-
-  tests:
-    needs: build-library
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download repository
-        uses: actions/checkout@v7
-
-      - name: Download library build
-        uses: actions/download-artifact@v5
-        with:
-          name: nstd-lib
-          path: build
-
-      - name: Build tests
-        run: cmake --build build --target nstd_tests
+        run: cmake --build build
 
       - name: Run tests
         run: ./build/nstd_tests
